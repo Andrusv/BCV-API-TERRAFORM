@@ -45,6 +45,64 @@ resource "aws_api_gateway_integration" "dynamodb" {
   }
 }
 
+resource "aws_api_gateway_integration_response" "dynamodb_response" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.rates.id
+  http_method = aws_api_gateway_method.get.http_method
+  status_code = "200"
+  response_templates = {
+  "application/json" = <<EOF
+  #set($items = $input.path('$.Items'))
+  {
+    "EUR": "$items[0].EUR.S",
+    "USD": "$items[0].USD.S",
+    "CNY": "$items[0].CNY.S",
+    "TRY": "$items[0].TRY.S",
+    "RUB": "$items[0].RUB.S",
+    "LastUpdated": "$items[0].lastUpdated.S"
+  }
+  EOF
+}
+  selection_pattern = ""
+}
+
+resource "aws_api_gateway_method_response" "get_200" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.rates.id
+  http_method = aws_api_gateway_method.get.http_method
+  status_code = "200"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "dynamodb_error" {
+  rest_api_id         = aws_api_gateway_rest_api.api.id
+  resource_id         = aws_api_gateway_resource.rates.id
+  http_method         = aws_api_gateway_method.get.http_method
+  status_code         = "500"
+  selection_pattern   = ".*(Internal|Error|Exception).*"
+  response_templates  = {
+    "application/json" = <<EOF
+    {
+      "error": "$input.path('$.errorMessage')"
+    }
+    EOF
+  }
+}
+
+resource "aws_api_gateway_method_response" "get_500" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.rates.id
+  http_method = aws_api_gateway_method.get.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
 resource "aws_iam_role_policy" "dynamodb_read" {
   name = "dynamodb-read-policy"
   role = aws_iam_role.api_gateway.id
