@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "exchange_rates" {
-  name         = "ExchangeRates"
+  name         = "ExchangeRates-${var.environment}"
   billing_mode = "PAY_PER_REQUEST"  # On-Demand (sin provisionar capacidad)
   hash_key     = "PK"
   range_key    = "SK"

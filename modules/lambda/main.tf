@@ -9,7 +9,7 @@ resource "aws_lambda_function" "exchange_updater" {
 
   environment {
     variables = {
-      TABLE_NAME = var.dynamodb_table.name
+      TABLE_NAME = var.dynamodb_table_name
     }
   }
 }
@@ -39,12 +39,11 @@ resource "aws_iam_role_policy" "dynamodb_access" {
       {
         Effect = "Allow",
         Action = [
-          "dynamodb:PutItem",
-          "dynamodb:Query"
+          "dynamodb:PutItem"
         ],
         Resource = [
-          var.dynamodb_table.arn,
-          "${var.dynamodb_table.arn}/index/*"
+          var.dynamodb_table_arn,
+          "${var.dynamodb_table_arn}/index/*"
         ]
       },
       {
@@ -60,10 +59,22 @@ resource "aws_iam_role_policy" "dynamodb_access" {
   })
 }
 
-resource "aws_lambda_permission" "apigw" {
-  statement_id  = "AllowAPIGatewayInvoke"
+resource "aws_cloudwatch_event_rule" "daily_trigger" {
+  name                = "${var.environment}-${aws_lambda_function.exchange_updater.function_name}-daily-trigger"
+  description         = "Ejecuta Lambda todos los días a las 10pm hora Venezuela"
+  schedule_expression = "cron(0 2 * * ? *)" # 2am UTC equivale a 10pm VET
+}
+
+resource "aws_cloudwatch_event_target" "trigger_lambda" {
+  rule      = aws_cloudwatch_event_rule.daily_trigger.name
+  target_id = "exchange_updater_trigger"
+  arn       = aws_lambda_function.exchange_updater.arn
+}
+
+resource "aws_lambda_permission" "allow_eventbridge" {
+  statement_id = "AllowExecutionFromEventBridge-${aws_cloudwatch_event_rule.daily_trigger.name}"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.exchange_updater.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${var.api_gateway_execution_arn}/*/*"
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.daily_trigger.arn
 }

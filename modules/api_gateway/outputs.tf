@@ -1,5 +1,5 @@
 output "api_url" {
-  value = "${aws_api_gateway_stage.prod.invoke_url}/rates"
+  value = "${aws_api_gateway_stage.stage.invoke_url}/rates"
 }
 
 output "api_arn" {
@@ -7,7 +7,7 @@ output "api_arn" {
 }
 
 output "stage_arn" {
-  value = aws_api_gateway_stage.prod.arn
+  value = aws_api_gateway_stage.stage.arn
 }
 
 output "lambda_invoke_arn" {
