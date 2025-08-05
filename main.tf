@@ -31,9 +31,3 @@ module "api_gateway" {
   aws_region          = var.aws_region
   dynamodb_table_name = module.database.dynamodb_table_name
 }
-
-module "eventbridge" {
-  source     = "./modules/eventbridge"
-  lambda_arn = module.lambda.lambda_arn
-  schedule   = "cron(0 0 * * ? *)" # 00:00 UTC (8pm Venezuela)
-}
