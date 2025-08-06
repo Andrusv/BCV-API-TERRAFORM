@@ -1,24 +1,3 @@
-# Security group para DAX
-resource "aws_security_group" "dax" {
-  name        = "dax-sg"
-  description = "Security group for DAX cluster"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 8111
-    to_port     = 8111
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"] # Solo permite acceso desde la VPC
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 # Security group para Lambda
 resource "aws_security_group" "lambda" {
   name        = "lambda-sg"
@@ -69,16 +48,4 @@ resource "aws_wafv2_web_acl" "api_waf" {
     metric_name                = "api-waf"
     sampled_requests_enabled   = true
   }
-}
-
-output "dax_sg_id" {
-  value = aws_security_group.dax.id
-}
-
-output "lambda_sg_id" {
-  value = aws_security_group.lambda.id
-}
-
-output "waf_arn" {
-  value = aws_wafv2_web_acl.api_waf.arn
 }
