@@ -12,7 +12,6 @@ module "security" {
 module "database" {
   source      = "./modules/database"
   subnet_ids  = module.networking.private_subnets
-  sg_id       = module.security.dax_sg_id
   environment = terraform.workspace
 }
 
