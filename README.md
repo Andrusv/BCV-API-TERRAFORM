@@ -1,7 +1,7 @@
-AWS API Gateway & DynamoDB Auto-Deploy Pro 🚀
+# AWS API Gateway & DynamoDB Auto-Deploy Pro 🚀
 Automated, production-ready REST API deployment with AWS API Gateway, Lambda, and DynamoDB integration.
 
-https://d1.awsstatic.com/logos/aws-logo-lockups/poweredbyaws/PB_AWS_logo_RGB_stacked_REV_SQ.91cd4af40773cbfbd15577a3c2b8a346fe3e8fa2.png
+![AWS Logo](https://d1.awsstatic.com/logos/aws-logo-lockups/poweredbyaws/PB_AWS_logo_RGB_stacked_REV_SQ.91cd4af40773cbfbd15577a3c2b8a346fe3e8fa2.png)
 
 🔍 Overview
 A Terraform module designed to automate the deployment of a fully functional REST API with DynamoDB backend and Lambda integration on AWS. Perfect for developers who need a scalable, serverless API solution with zero manual configuration for currency exchange rate management.
